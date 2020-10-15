@@ -57,6 +57,7 @@ int main()
         if (!cmp("matrix/tres","matrix/tresult") || !cmp("matrix/ftres","matrix/tfresult"))
         {
             cerr << "Умножение некорректно" << endl;
+            return -1;
         }
     }
     cout << "Умножение корректно" << endl;
