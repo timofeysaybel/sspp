@@ -302,7 +302,7 @@ Matrix<T> Matrix<T>::kji(const Matrix<T> &another) const
         for (int j=0;j<another.m;j++)
         {
             for (int i=0;i<n;i++)    
-                res.mat[i][j]+=mat[i][k]*another.mat[k][j];
+                res.mat[i][j]+=another.mat[i][k]*mat[k][j];
         }
     }
     res.n=n;
