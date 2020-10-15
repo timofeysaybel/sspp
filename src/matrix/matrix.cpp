@@ -116,6 +116,12 @@ void Matrix<T>::print(ostream &stream) const
 template<typename T>
 Matrix<T> Matrix<T>::ijk(const Matrix<T> &another) const
 {
+    if (m != another.n || m < 0 || n < 0 || another.m <0)
+    {
+        cerr << "Неверные размеры матриц" << endl;
+        throw -1;
+    }
+
     Matrix<T> res;
 
     res.mat.resize(n);
@@ -145,6 +151,12 @@ Matrix<T> Matrix<T>::ijk(const Matrix<T> &another) const
 template<typename T>
 Matrix<T> Matrix<T>::jik(const Matrix<T> &another) const
 {
+    if (m != another.n || m < 0 || n < 0 || another.m <0)
+    {
+        cerr << "Неверные размеры матриц" << endl;
+        throw -1;
+    }
+
     Matrix<T> res;
 
     res.mat.resize(n);
@@ -173,6 +185,12 @@ Matrix<T> Matrix<T>::jik(const Matrix<T> &another) const
 template<typename T>
 Matrix<T> Matrix<T>::ikj(const Matrix<T> &another) const
 {
+    if (m != another.n || m < 0 || n < 0 || another.m <0)
+    {
+        cerr << "Неверные размеры матриц" << endl;
+        throw -1;
+    }
+
     Matrix<T> res;
 
     res.mat.resize(n);
@@ -199,6 +217,12 @@ Matrix<T> Matrix<T>::ikj(const Matrix<T> &another) const
 template<typename T>
 Matrix<T> Matrix<T>::kij(const Matrix<T> &another) const
 {
+    if (m != another.n || m < 0 || n < 0 || another.m <0)
+    {
+        cerr << "Неверные размеры матриц" << endl;
+        throw -1;
+    }
+
     Matrix<T> res;
 
     res.mat.resize(n);
@@ -225,6 +249,12 @@ Matrix<T> Matrix<T>::kij(const Matrix<T> &another) const
 template<typename T>
 Matrix<T> Matrix<T>::jki(const Matrix<T> &another) const
 {
+    if (m != another.n || m < 0 || n < 0 || another.m <0)
+    {
+        cerr << "Неверные размеры матриц" << endl;
+        throw -1;
+    }
+
     Matrix<T> res;
 
     res.mat.resize(n);
@@ -251,6 +281,12 @@ Matrix<T> Matrix<T>::jki(const Matrix<T> &another) const
 template<typename T>
 Matrix<T> Matrix<T>::kji(const Matrix<T> &another) const
 {
+    if (m != another.n || m < 0 || n < 0 || another.m <0)
+    {
+        cerr << "Неверные размеры матриц" << endl;
+        throw -1;
+    }
+
     Matrix<T> res;
 
     res.mat.resize(n);
