@@ -206,7 +206,7 @@ Matrix<T> Matrix<T>::ikj(const Matrix<T> &another) const
         for (int k=0;k<m;k++)
         {
             for (int j=0;j<another.m;j++)
-                res.mat[i][j]+=mat[i][k]*another.mat[k][j];
+                res.mat[i][j]+=mat[k][i]*another.mat[k][j];
         }
     }
     res.n=n;
