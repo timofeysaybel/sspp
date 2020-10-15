@@ -138,7 +138,7 @@ Matrix<T> Matrix<T>::ijk(const Matrix<T> &another) const
         {
             for (int k=0;k<m;k++)
             {
-                res.mat[i][j]+=mat[i][k]+another.mat[k][j];
+                res.mat[i][j]+=mat[i][k]*another.mat[k][j];
             }
         }
     }
