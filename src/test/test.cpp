@@ -48,13 +48,13 @@ int main()
 {
     for (int i = 0; i < 6; i++)
     {
-        string cmd = "./multiply.out matrix/mA matrix/mB matrix/res ";
-        string cmdf = "./multiply.out matrix/fmA matrix/fmB matrix/fres ";
+        string cmd = "./multiply.out matrix/tA matrix/tB matrix/tres ";
+        string cmdf = "./multiply.out matrix/ftA matrix/ftB matrix/ftres ";
         cmd = cmd + to_string(i);
         cmdf = cmdf + to_string(i);
         system(cmd.c_str());
         system(cmdf.c_str());
-        if (!cmp("matrix/res","matrix/result") || !cmp("matrix/fres","matrix/fresult"))
+        if (!cmp("matrix/tres","matrix/tresult") || !cmp("matrix/ftres","matrix/tfresult"))
         {
             cerr << "Умножение некорректно" << endl;
         }
