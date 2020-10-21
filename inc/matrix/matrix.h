@@ -36,7 +36,7 @@ public:
 
     void print(ostream &stream) const;
 
-    void saveMatrix(string filename) const;
+    void saveMatrix(string filename,char mode) const;
 
     bool cmpMatrix(const Matrix<T> &another) const;
 };

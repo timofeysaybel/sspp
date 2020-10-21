@@ -47,7 +47,7 @@ int main(int argc, char **argv)
             for (int i = 0; i < N; i++)
             {
                 Multiplier<float> mltplr(args);
-                mltplr.multiply();
+                mltplr.multiply('f');
             }
         }
         else
@@ -55,7 +55,7 @@ int main(int argc, char **argv)
             for (int i = 0; i < N; i++)
             {
                 Multiplier<double> mltplr(args);
-                mltplr.multiply();
+                mltplr.multiply('d');
             }
         }
     }

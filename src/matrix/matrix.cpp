@@ -311,11 +311,11 @@ Matrix<T> Matrix<T>::kji(const Matrix<T> &another) const
 }
 
 template <typename T>
-void Matrix<T>::saveMatrix(string filename) const
+void Matrix<T>::saveMatrix(string filename,char mode) const
 {
     ofstream file(filename);
 
-    file << 'f' << endl << n << endl << m << endl;
+    file << mode << endl << n << endl << m << endl;
 
     for (int i = 0; i < n; i++)
     {

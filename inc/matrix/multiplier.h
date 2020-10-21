@@ -11,6 +11,6 @@ public:
 
     Multiplier(string args[]);
 
-    void multiply();
+    void multiply(char m);
 };
 

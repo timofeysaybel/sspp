@@ -13,12 +13,12 @@ Multiplier<T>::Multiplier(string args[]) : a(args[0]),b(args[1])
 }
 
 template<typename T>
-void Multiplier<T>::multiply()
+void Multiplier<T>::multiply(char m)
 {
         if (mode == 0)
         {
             Matrix<T> c(a.ijk(b));
-            c.saveMatrix(cname);
+            c.saveMatrix(cname,m);
 
             return;
         }
@@ -26,31 +26,31 @@ void Multiplier<T>::multiply()
         {
             Matrix<T> c(a.ikj(b));
 
-            c.saveMatrix(cname);
+            c.saveMatrix(cname,m);
             return;
         }
         if (mode == 2)
         {
             Matrix<T> c(a.kij(b));
-            c.saveMatrix(cname);
+            c.saveMatrix(cname,m);
             return;
         }
         if (mode == 3)
         {
             Matrix<T> c(a.jik(b));
-            c.saveMatrix(cname);
+            c.saveMatrix(cname,m);
             return;
         }
         if (mode == 4)
         {
             Matrix<T> c(a.jki(b));
-            c.saveMatrix(cname);
+            c.saveMatrix(cname,m);
             return;
         }
         if (mode == 5)
         {
             Matrix<T> c(a.kji(b));
-            c.saveMatrix(cname);
+            c.saveMatrix(cname,m);
             return;
         }
         else

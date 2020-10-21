@@ -1,13 +1,25 @@
 .PHONY: report
 
-multiply:
+test: multiply.out test.out 
+	./test.out
+
+multiply.out:
 	g++ src/matrix/main.cpp src/matrix/matrix.cpp src/matrix/multiplier.cpp -o multiply.out 
 
-init:
+init.out:
 	g++ src/test/initMatrix.cpp -o init.out
 
-test:
-	make multiply && g++ src/test/test.cpp src/matrix/matrix.cpp -o test.out && ./test.out
+test.out: 
+	g++ src/test/test.cpp src/matrix/matrix.cpp -o test.out 
 
-report: 
-	g++ src/test/report.cpp -o report.out && ./report.out > report/data.dat && gnuplot report/graph.plt
+report.out: 
+	g++ src/test/report.cpp -o report.out
+
+report/data.dat:
+	./report.out > report/data.dat
+
+report: multiply.out report.out report/data.dat
+	gnuplot report/graph.plt
+
+clean:
+	rm *.out report/data.dat
