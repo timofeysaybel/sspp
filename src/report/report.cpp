@@ -85,5 +85,5 @@ int execute(string fileA,string fileB,int mode)
 
 int block_size(int c)
 {
-	return sqrt(c/3);
+	return sqrt((c/4)/3);
 }
