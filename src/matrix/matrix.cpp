@@ -186,3 +186,43 @@ bool Matrix::operator==(const Matrix &another) const
     }
     return true;
 }
+
+Matrix Matrix::ikj(const Matrix &another,size_t sizeOfBlock) const
+{
+    if (m != another.n)
+    {
+        cerr << "Разный размер матриц при перемножении" << endl;
+        exit(-1);
+    }
+
+    Matrix res(n,another.m);
+
+    int i = 0;
+    while (i < n)
+    {
+        int j = 0;
+        int offsetI = sizeOfBlock > n - i ? n - i : sizeOfBlock;
+        while (j < another.m)
+        {
+            int k = 0;
+            int offsetJ = sizeOfBlock > another.m - j ? another.m - j : sizeOfBlock;
+            while (k < m)
+            {
+                int offsetK = sizeOfBlock > m - k ? m - k : sizeOfBlock;
+                for (int i1 = i; i1 < i + offsetI; i1++)
+                {
+                    for (int k1 = k; k1 < k + offsetK; k1++)
+                    {
+                        for (int j1 = j; j1 < j + offsetJ; j1++)
+                            res.mat[i1][j1] += mat[i1][k1] * another.mat[k1][j1];
+                    }
+                }
+                k += offsetK;
+            }
+            j += offsetJ;
+        }
+        i += offsetI;
+    }
+
+    return res;
+}

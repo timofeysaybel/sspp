@@ -6,7 +6,7 @@ using namespace std;
 
 class Matrix
 {
-    vector<vector<float>> mat;
+    vector<vector<float> > mat;
     size_t n,m;
 
 public:
@@ -23,7 +23,10 @@ public:
 
     Matrix operator=(const Matrix &another);
 
+    //ijk
     Matrix operator*(const Matrix &another) const;
+
+    Matrix ikj(const Matrix &another,size_t sizeOfBlock) const;
 
     Matrix blockMultiply(const Matrix &another,size_t sizeOfBlock) const;
 
