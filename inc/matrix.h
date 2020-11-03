@@ -33,4 +33,6 @@ public:
     void print(ostream &stream = cout) const;
 
     bool operator==(const Matrix &another) const;
+
+    void saveMatrix(string filename) const;
 };

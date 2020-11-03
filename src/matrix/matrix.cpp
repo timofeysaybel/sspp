@@ -226,3 +226,17 @@ Matrix Matrix::ikj(const Matrix &another,size_t sizeOfBlock) const
 
     return res;
 }
+
+void Matrix::saveMatrix(string filename) const
+{
+    ofstream file(filename);
+
+    file << n << endl << m << endl;
+
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < m; j++)
+            file << mat[i][j] << " ";
+        file << endl;
+    }
+}

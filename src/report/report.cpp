@@ -21,33 +21,35 @@ int main(int argc,char **argv)
 {
     if (argc != 3)
     {
-	cerr << "Неверные параметры командной строки" << endl;
-	return -1;
+        cerr << "Неверные параметры командной строки" << endl;
+        return -1;
     }
-	
-    ofstream l1("report/l1.dat"),l2("report/l2.dat"),cyc("report/cyc.dat"),flop("report/flop.dat");   
- 
+
+    ofstream l1("report/l1.dat"), l2("report/l2.dat"), cyc("report/cyc.dat"), flop("report/flop.dat"), clocks("report/clocks.dat");
+
     if (PAPI_VER_CURRENT != PAPI_library_init(PAPI_VER_CURRENT))
     {
         cerr << "PAPI_library_init error" << endl;
         return -1;
     }
-    
+
     for (int i = 0; i < 3; i++)
     {
-	values[0] = 0;
-	values[1] = 0;
-	values[2] = 0;
-	values[3] = 0;
-        PAPI_start_counters(events,EVENT_COUNT);
-        execute(string(argv[1]),string(argv[2]),i);
-	PAPI_stop_counters(values,EVENT_COUNT);	
-	cyc << i << "\t" << values[0] << endl;
-	l1 << i << "\t" << values[1] << endl;
-	l2 << i << "\t" << values[2] << endl;
-	flop << i << "\t" << values[3] << endl;
+        values[0] = 0;
+        values[1] = 0;
+        values[2] = 0;
+        values[3] = 0;
+        clock_t start = clock();
+        PAPI_start_counters(events, EVENT_COUNT);
+        execute(string(argv[1]), string(argv[2]), i);
+        PAPI_stop_counters(values, EVENT_COUNT);
+        clocks << i << "\t" << (clock() - start) << endl;
+        cyc << i << "\t" << values[0] << endl;
+        l1 << i << "\t" << values[1] << endl;
+        l2 << i << "\t" << values[2] << endl;
+        flop << i << "\t" << values[3] << endl;
     }
-    
+
     return 0;
 }
 
