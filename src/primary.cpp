@@ -106,27 +106,26 @@ vector<int> Primary::parallelFindPrimaries()
 
     if (rank == 0)
     {
-        vector<int> rootPrimaries;
         int l = sqrt(last) + 1;
 
         if (l < 4)
         {
             if (first <= 3)
             {
-                rootPrimaries.push_back(2);
+                primaries.push_back(2);
                 primaries.push_back(3);
             } else
             {
                 if (first <= 2)
-                    rootPrimaries.push_back(2);
+                    primaries.push_back(2);
             }
 
         } else
         {
             if (first <= 3)
             {
-                rootPrimaries.push_back(2);
-                rootPrimaries.push_back(3);
+                primaries.push_back(2);
+                primaries.push_back(3);
             }
             fill(2, l);
             fill(3, l);
@@ -136,15 +135,13 @@ vector<int> Primary::parallelFindPrimaries()
                 if (numbers[i] == PRIMARY)
                 {
                     if (i >= first)
-                        rootPrimaries.push_back(i);
+                        primaries.push_back(i);
                     fill(i, l);
                 }
             }
         }
         for (int i = 1; i < commSize; i++)
-            MPI_Send(&rootPrimaries[0], l, MPI_INT, i, 0, MPI_COMM_WORLD);
-
-        primaries.insert(primaries.end(), rootPrimaries.begin(), rootPrimaries.end());
+            MPI_Send(&primaries[0], l, MPI_INT, i, 0, MPI_COMM_WORLD);
 
         for (int i = 1; i < commSize; i++)
         {
@@ -160,7 +157,10 @@ vector<int> Primary::parallelFindPrimaries()
             delete[] buffer;
             tmp.clear();
         }
-    } else
+        cout << endl;
+        print(primaries);
+    }
+    else
     {
         int n;
         MPI_Probe(0, 0, MPI_COMM_WORLD, &status);
@@ -214,4 +214,19 @@ vector<int> Primary::toVector(int* arr,int n)
         res[i] = arr[i];
 
     return res;
+}
+/*
+void save(vector<int> numbers, string filename)
+{
+    ofstream file(filename);
+
+    for (auto e : numbers)
+        file << e << " ";
+}*/
+
+void Primary::print(vector<int> numbers)
+{
+    for (auto e : numbers)
+        cout << e << " ";
+    cout << endl;
 }

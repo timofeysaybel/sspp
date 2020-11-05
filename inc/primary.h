@@ -17,6 +17,8 @@ class Primary
 
     vector<int> toVector(int* arr, int);
 
+    void print(vector<int> numbers);
+
 public:
     Primary()
     {}
