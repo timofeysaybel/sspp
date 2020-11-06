@@ -1,7 +1,11 @@
 #include <mpi.h>
 #include <cmath>
+#include <fstream>
 
 #include "../inc/primary.h"
+
+#define RESET "\033[0m"
+#define RED "\033[1;31m"
 
 Primary::Primary(const Primary &another)
 {
@@ -101,12 +105,14 @@ vector<int> Primary::parallelFindPrimaries()
     MPI_Init(NULL, NULL);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &commSize);
-    int childSize = (last - sqrt(last)) / commSize;
+
+    int childSize = (last - sqrt(last)) / (commSize - 1);
     MPI_Status status;
 
     if (rank == 0)
     {
-        int l = sqrt(last) + 1;
+        cout << endl;
+        int l = commSize == 1 ? last : sqrt(last) + 1;
 
         if (l < 4)
         {
@@ -114,13 +120,14 @@ vector<int> Primary::parallelFindPrimaries()
             {
                 primaries.push_back(2);
                 primaries.push_back(3);
-            } else
+            }
+            else
             {
                 if (first <= 2)
                     primaries.push_back(2);
             }
-
-        } else
+        }
+        else
         {
             if (first <= 3)
             {
@@ -140,24 +147,23 @@ vector<int> Primary::parallelFindPrimaries()
                 }
             }
         }
+
         for (int i = 1; i < commSize; i++)
-            MPI_Send(&primaries[0], l, MPI_INT, i, 0, MPI_COMM_WORLD);
+            MPI_Send(toIntArr(primaries), l, MPI_INT, i, 0, MPI_COMM_WORLD);
 
         for (int i = 1; i < commSize; i++)
         {
             int *buffer = new int[childSize];
-            MPI_Recv(&buffer, childSize, MPI_INT, i, 0, MPI_COMM_WORLD, &status);
+            MPI_Recv(buffer, childSize, MPI_INT, i, 0, MPI_COMM_WORLD, &status);
             vector<int> tmp = toVector(buffer, childSize);
             for (auto e : tmp)
             {
                 if (e != NOT_PRIMARY)
                     primaries.push_back(e);
             }
-
             delete[] buffer;
             tmp.clear();
         }
-        cout << endl;
         print(primaries);
     }
     else
@@ -165,9 +171,9 @@ vector<int> Primary::parallelFindPrimaries()
         int n;
         MPI_Probe(0, 0, MPI_COMM_WORLD, &status);
         MPI_Get_count(&status, MPI_INT, &n);
-
+        
         int *arr = new int[n];
-
+        cout << RED << "PLEASE" << RESET << endl;
         MPI_Recv(arr, n, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
         vector<int> pr = toVector(arr, n);
 
@@ -178,7 +184,7 @@ vector<int> Primary::parallelFindPrimaries()
 
         vector<int> childPrimaries(childSize,NOT_PRIMARY);
 
-        for (int i = start, j = 0; j < childSize, i < stop; j++, i++)
+        for (int i = start, j = 0; i < stop; j++, i++)
         {
             if (numbers[i] == PRIMARY)
             {
@@ -188,7 +194,7 @@ vector<int> Primary::parallelFindPrimaries()
         }
         delete [] arr;
         pr.clear();
-        MPI_Send(&childPrimaries[0], childSize, MPI_INT, 0, 0, MPI_COMM_WORLD);
+        MPI_Send(toIntArr(childPrimaries), childSize, MPI_INT, 0, 0, MPI_COMM_WORLD);
         childPrimaries.clear();
     }
     MPI_Finalize();
@@ -215,14 +221,15 @@ vector<int> Primary::toVector(int* arr,int n)
 
     return res;
 }
-/*
-void save(vector<int> numbers, string filename)
+
+
+void Primary::save(vector<int> numbers, string filename)
 {
     ofstream file(filename);
 
     for (auto e : numbers)
         file << e << " ";
-}*/
+}
 
 void Primary::print(vector<int> numbers)
 {

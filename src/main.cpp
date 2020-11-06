@@ -4,7 +4,6 @@
 
 int main(int argc,char **argv)
 {
-    cout << endl;
     if (argc != 4)
     {
         cerr << "Неверные параметры командной строки" << endl;

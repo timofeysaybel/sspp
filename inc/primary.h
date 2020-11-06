@@ -19,6 +19,8 @@ class Primary
 
     void print(vector<int> numbers);
 
+    void save(vector<int> numbers, string filename);
+
 public:
     Primary()
     {}
