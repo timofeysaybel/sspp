@@ -13,6 +13,6 @@ int main(int argc,char **argv)
     int first = stoi(string(argv[1])), last = stoi(string(argv[2]));
 
     Primary primary(first,last);
-    auto p1 = primary.parallelFindPrimaries();
+    auto p1 = primary.parallelFindPrimaries(string(argv[3]));
     return 0;
 }

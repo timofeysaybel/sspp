@@ -97,7 +97,7 @@ void Primary::fill(int index,int stop,int start)
     }
 }
 
-vector<int> Primary::parallelFindPrimaries()
+vector<int> Primary::parallelFindPrimaries(string filename)
 {
     int rank, commSize;
     vector<int> primaries;
@@ -112,28 +112,25 @@ vector<int> Primary::parallelFindPrimaries()
     if (rank == 0)
     {
         cout << endl;
+        double start = MPI_Wtime();
         int l = commSize == 1 ? last : sqrt(last) + 1;
 
         if (l < 4)
         {
-            if (first <= 3)
+            if (l <= 3)
             {
                 primaries.push_back(2);
                 primaries.push_back(3);
-            }
-            else
+            } else
             {
-                if (first <= 2)
+                if (l <= 2)
                     primaries.push_back(2);
             }
         }
         else
         {
-            if (first <= 3)
-            {
-                primaries.push_back(2);
-                primaries.push_back(3);
-            }
+            primaries.push_back(2);
+            primaries.push_back(3);
             fill(2, l);
             fill(3, l);
 
@@ -141,16 +138,18 @@ vector<int> Primary::parallelFindPrimaries()
             {
                 if (numbers[i] == PRIMARY)
                 {
-                    if (i >= first)
-                        primaries.push_back(i);
+                    primaries.push_back(i);
                     fill(i, l);
                 }
             }
         }
 
-        for (int i = 1; i < commSize; i++)
-            MPI_Send(toIntArr(primaries), l, MPI_INT, i, 0, MPI_COMM_WORLD);
+        int sz = primaries.size();
 
+        for (int i = 1; i < commSize; i++)
+            MPI_Send(toIntArr(primaries), primaries.size(), MPI_INT, i, 0, MPI_COMM_WORLD);
+
+        double time = 0.0, max = 0.0;
         for (int i = 1; i < commSize; i++)
         {
             int *buffer = new int[childSize];
@@ -163,17 +162,36 @@ vector<int> Primary::parallelFindPrimaries()
             }
             delete[] buffer;
             tmp.clear();
+            MPI_Recv(&time,1,MPI_DOUBLE,i,0,MPI_COMM_WORLD,&status);
+            if (time > max)
+                max = time;
         }
-        print(primaries);
+
+        for (int i = 0; i < primaries.size(); i++)
+        {
+            if (primaries[i] < first)
+            {
+                primaries.erase(primaries.begin() + i);
+                i--;
+            }
+        }
+        double stop = MPI_Wtime();
+        ofstream all("report/all.dat",ios_base::app);
+        ofstream maximum("report/max.dat",ios_base::app);
+        all << commSize << "\t" << stop - start << endl;
+        maximum << commSize << "\t" << max << endl;
+        save(primaries,filename);
+        cout << "Количество простых чисел: " <<  primaries.size() << endl;
     }
     else
     {
+        double time = MPI_Wtime();
         int n;
         MPI_Probe(0, 0, MPI_COMM_WORLD, &status);
         MPI_Get_count(&status, MPI_INT, &n);
-        
+
         int *arr = new int[n];
-        cout << RED << "PLEASE" << RESET << endl;
+
         MPI_Recv(arr, n, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
         vector<int> pr = toVector(arr, n);
 
@@ -182,7 +200,7 @@ vector<int> Primary::parallelFindPrimaries()
         for (int i = 0; i < pr.size(); i++)
             fill(pr[i], stop, start);
 
-        vector<int> childPrimaries(childSize,NOT_PRIMARY);
+        vector<int> childPrimaries(childSize, NOT_PRIMARY);
 
         for (int i = start, j = 0; i < stop; j++, i++)
         {
@@ -192,10 +210,12 @@ vector<int> Primary::parallelFindPrimaries()
                     childPrimaries[j] = i;
             }
         }
-        delete [] arr;
+        delete[] arr;
         pr.clear();
         MPI_Send(toIntArr(childPrimaries), childSize, MPI_INT, 0, 0, MPI_COMM_WORLD);
         childPrimaries.clear();
+        time = MPI_Wtime() - time;
+        MPI_Send(&time,1,MPI_DOUBLE,0,0,MPI_COMM_WORLD);
     }
     MPI_Finalize();
 
@@ -222,13 +242,13 @@ vector<int> Primary::toVector(int* arr,int n)
     return res;
 }
 
-
 void Primary::save(vector<int> numbers, string filename)
 {
     ofstream file(filename);
 
     for (auto e : numbers)
         file << e << " ";
+    file.close();
 }
 
 void Primary::print(vector<int> numbers)
