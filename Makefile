@@ -2,13 +2,19 @@ primary.out:
 	mpic++ src/main.cpp src/primary.cpp -o primary.out -std=c++11
 
 clean:
-	rm *.out
+	rm *.out *.txt report/*.dat *.err
 
-report1.out:
-	g++ src/report/report1.cpp -o report1.out -std=c++11
+report.out:
+	g++ src/report/report.cpp -o report.out -std=c++11	
 
-report2.out:
-	g++ src/report/report2.cpp -o report2.out -std=c++11	
+report: primary.out report.out 
+	./report.out 2> tmp.txt && rm tmp.txt && gnuplot report/all.plt && gnuplot report/max.plt
 
-report: primary.out report1.out report2.out 
-	./report1.out && ./report2.out
+RUN = mpisubmit-new.pl -p
+CMD = primary.out 1 1000000 result.txt report/all.dat report/max.dat
+
+reportPolus: primary.out
+	$(RUN) 1 $(CMD) && $(RUN) 2 $(CMD) && $(RUN) 4 $(CMD)  && $(RUN) 8 $(CMD) && $(RUN) 16 $(CMD) && $(RUN) 20 $(CMD)
+
+graph:
+	gnuplot report/all.plt && gnuplot report/max.plt

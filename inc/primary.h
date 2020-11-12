@@ -35,5 +35,5 @@ public:
 
     vector<int> findPrimaries();
 
-    vector<int> parallelFindPrimaries(string filename);
+    vector<int> parallelFindPrimaries(string filename,string allName,string maxName);
 };

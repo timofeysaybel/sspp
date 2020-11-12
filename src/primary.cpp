@@ -97,7 +97,7 @@ void Primary::fill(int index,int stop,int start)
     }
 }
 
-vector<int> Primary::parallelFindPrimaries(string filename)
+vector<int> Primary::parallelFindPrimaries(string filename,string allName,string maxName)
 {
     int rank, commSize;
     vector<int> primaries;
@@ -176,10 +176,19 @@ vector<int> Primary::parallelFindPrimaries(string filename)
             }
         }
         double stop = MPI_Wtime();
-        ofstream all("report/all.dat",ios_base::app);
-        ofstream maximum("report/max.dat",ios_base::app);
+
+        if (commSize == 1)
+        {
+            max = stop - start;
+        }
+
+        ofstream all(allName,ios_base::app);
+        ofstream maximum(maxName ,ios_base::app);
         all << commSize << "\t" << stop - start << endl;
         maximum << commSize << "\t" << max << endl;
+
+        all.close();
+        maximum.close();
         save(primaries,filename);
         cout << "Количество простых чисел: " <<  primaries.size() << endl;
     }

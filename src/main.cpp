@@ -4,15 +4,14 @@
 
 int main(int argc,char **argv)
 {
-    if (argc != 4)
+    if (argc != 6)
     {
         cerr << "Неверные параметры командной строки" << endl;
         return -1;
     }
-
     int first = stoi(string(argv[1])), last = stoi(string(argv[2]));
 
     Primary primary(first,last);
-    auto p1 = primary.parallelFindPrimaries(string(argv[3]));
+    primary.parallelFindPrimaries(string(argv[3]),string(argv[4]),string(argv[5]));
     return 0;
 }
