@@ -106,7 +106,8 @@ vector<int> Primary::parallelFindPrimaries(string filename,string allName,string
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &commSize);
 
-    int childSize = (last - sqrt(last)) / (commSize - 1);
+    int childStart = sqrt(last) > first ? sqrt(last) : first;
+    int childSize = (last - childStart) / (commSize - 1);
     MPI_Status status;
 
     if (rank == 0)
@@ -198,13 +199,13 @@ vector<int> Primary::parallelFindPrimaries(string filename,string allName,string
         int n;
         MPI_Probe(0, 0, MPI_COMM_WORLD, &status);
         MPI_Get_count(&status, MPI_INT, &n);
-
+        
         int *arr = new int[n];
 
         MPI_Recv(arr, n, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
         vector<int> pr = toVector(arr, n);
 
-        int start = sqrt(last) + 1 + (rank - 1) * childSize, stop = sqrt(last) + 1 + rank * childSize;
+        int start = childStart + 1 + (rank - 1) * childSize, stop = childStart + 1 + rank * childSize;
 
         for (int i = 0; i < pr.size(); i++)
             fill(pr[i], stop, start);
