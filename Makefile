@@ -18,3 +18,4 @@ reportPolus: primary.out
 
 graph:
 	gnuplot report/all.plt && gnuplot report/max.plt
+
