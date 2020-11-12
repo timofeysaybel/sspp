@@ -1,5 +1,4 @@
 *.out
 *.txt
 report/*.dat
-.DS_Store
 *.err
