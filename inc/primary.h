@@ -15,12 +15,6 @@ class Primary
 
     void fill(int index, int stop = -1, int start = -1);
 
-    int *toIntArr(const vector<int> &v);
-
-    vector<int> toVector(int* arr, int);
-
-    void print(vector<int> numbers);
-
     void save(vector<int> numbers, string filename);
 
     double findMax(vector<double> v);
@@ -42,8 +36,6 @@ public:
     Primary operator=(const Primary &another);
 
     vector<int> findPrimaries();
-
-    vector<int> parallelFindPrimaries(string filename,string allName,string maxName);
 
     vector<int> pthreadFindPrimaries(string filename,string allName,string maxName,int threadNum);
 };
