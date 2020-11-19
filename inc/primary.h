@@ -1,6 +1,8 @@
 #include <iostream>
 #include <vector>
 
+#include "res_struct.h"
+
 #define PRIMARY 0
 #define NOT_PRIMARY 1
 
@@ -21,6 +23,12 @@ class Primary
 
     void save(vector<int> numbers, string filename);
 
+    double findMax(vector<double> v);
+
+    double sum(vector<double> v);
+
+    static void *pthreadCount(void *res);
+
 public:
     Primary()
     {}
@@ -36,4 +44,6 @@ public:
     vector<int> findPrimaries();
 
     vector<int> parallelFindPrimaries(string filename,string allName,string maxName);
+
+    vector<int> pthreadFindPrimaries(string filename,string allName,string maxName,int threadNum);
 };
