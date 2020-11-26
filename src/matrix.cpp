@@ -144,10 +144,13 @@ vector<double> Matrix::parallelMultiply(const vector<double> &b,string fileC,str
 
             for (int i = 1; i < commSize; i++)
             {
-                double *arr = new double[offset];
-                MPI_Recv(arr,offset,MPI_DOUBLE,i,0,MPI_COMM_WORLD,&status);
-                for (int j = i * offset; j < (i + 1) * offset; j++)
-                    c[j] = arr [j - i * offset];
+                int size = 0;
+                MPI_Probe(i, 0, MPI_COMM_WORLD, &status);
+                MPI_Get_count(&status, MPI_DOUBLE, &size);
+                double *arr = new double[size];
+                MPI_Recv(arr,size,MPI_DOUBLE,i,0,MPI_COMM_WORLD,&status);
+                for (int j = 0; j < size; j++)
+                    c[j + i * offset] = arr [j];
                 delete [] arr;
                 double t = 0.0;
                 MPI_Recv(&t,1,MPI_DOUBLE,i,0,MPI_COMM_WORLD,&status);
@@ -186,12 +189,11 @@ vector<double> Matrix::parallelMultiply(const vector<double> &b,string fileC,str
     }
     else
     {
-        MPI_Probe(0, 0, MPI_COMM_WORLD, &status);
 
         if (n >= m)
         {
             double time = MPI_Wtime();
-            vector<double> res(offset);
+            vector<double> res(stop - start);
 
             for (int i = start; i < stop; i++)
             {
@@ -201,7 +203,7 @@ vector<double> Matrix::parallelMultiply(const vector<double> &b,string fileC,str
             }
             time -= MPI_Wtime() - time;
 
-            MPI_Send(Matrix::toArr(res), offset, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
+            MPI_Send(Matrix::toArr(res), stop - start, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
             res.clear();
             MPI_Send(&time,1,MPI_DOUBLE,0,0,MPI_COMM_WORLD);
         }
@@ -218,7 +220,7 @@ vector<double> Matrix::parallelMultiply(const vector<double> &b,string fileC,str
             }
             time -= MPI_Wtime() - time;
 
-            MPI_Send(Matrix::toArr(res), offset, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
+            MPI_Send(Matrix::toArr(res), n, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
             res.clear();
             MPI_Send(&time,1,MPI_DOUBLE,0,0,MPI_COMM_WORLD);
         }
