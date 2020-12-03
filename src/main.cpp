@@ -4,7 +4,7 @@ int main(int argc, char **argv)
 {
     try
     {
-        if (argc != 7)
+        if (argc < 7)
         {
             cerr << "Неверные параметры командной строки" << endl;
             return -1;
