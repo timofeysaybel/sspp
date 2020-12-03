@@ -97,16 +97,17 @@ vector<int> Primary::parallelFindPrimaries(string filename,string allName,string
 {
     int rank, commSize;
     vector<int> primaries;
-
+    
     MPI_Init(NULL, NULL);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &commSize);
-
+    
     int childStart = sqrt(last) > first ? sqrt(last) : first;
-    int childSize = commSize != 0 ? (last - childStart) / (commSize - 1) : 0;
+    int childSize = commSize != 1 ? (last - childStart) / (commSize - 1) : 0;
     
     MPI_Status status;
-
+    
+    cout << endl;
     if (rank == 0)
     {
         cout << endl;
@@ -141,7 +142,7 @@ vector<int> Primary::parallelFindPrimaries(string filename,string allName,string
                 }
             }
         }
-
+        
         int sz = primaries.size();
 
         double stop = MPI_Wtime();
