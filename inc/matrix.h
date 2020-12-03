@@ -13,6 +13,8 @@ class Matrix
 
     static vector<double> toVector(double* arr,int n);
 
+    static double getCommonTime(string filename);
+
 public:
 
     Matrix() {}
@@ -31,7 +33,7 @@ public:
 
     vector<double> operator*(const vector<double> &vec) const;
 
-    vector<double> parallelMultiply(const vector<double> &b,string fileC,string fileTime) const;
+    vector<double> parallelMultiply(const vector<double> &b,string fileC,string fileTime,string speedUp,string efficiency,int mode = 0) const;
 
     void print(ostream &stream = cout) const;
 

@@ -1,6 +1,8 @@
 #include "../inc/matrix.h"
 #include <mpi.h>
 
+#define COMMON_TIME 1
+
 Matrix::Matrix(const Matrix &another)
 {
     n = another.n;
@@ -108,7 +110,7 @@ vector<double> Matrix::operator*(const vector<double> &vec) const
     return res;
 }
 
-vector<double> Matrix::parallelMultiply(const vector<double> &b,string fileC,string fileTime) const
+vector<double> Matrix::parallelMultiply(const vector<double> &b,string fileC,string fileTime,string speedUp,string efficiency,int mode) const
 {
     int rank, commSize;
     vector<double> c(n);
@@ -140,7 +142,7 @@ vector<double> Matrix::parallelMultiply(const vector<double> &b,string fileC,str
                     c[i] += mat[i][j] * b[j];
             }
 
-            time -= MPI_Wtime() - time;
+            time = MPI_Wtime() - time;
 
             for (int i = 1; i < commSize; i++)
             {
@@ -154,7 +156,8 @@ vector<double> Matrix::parallelMultiply(const vector<double> &b,string fileC,str
                 delete [] arr;
                 double t = 0.0;
                 MPI_Recv(&t,1,MPI_DOUBLE,i,0,MPI_COMM_WORLD,&status);
-                time += t;
+                if (t > time)
+                    time = t;
             }
         }
         else
@@ -166,7 +169,7 @@ vector<double> Matrix::parallelMultiply(const vector<double> &b,string fileC,str
                     c[i] += mat[i][j] * b[j];
             }
 
-            time -= MPI_Wtime() - time;
+            time = MPI_Wtime() - time;
 
             for (int i = 1; i < commSize; i++)
             {
@@ -177,15 +180,23 @@ vector<double> Matrix::parallelMultiply(const vector<double> &b,string fileC,str
                 delete [] arr;
                 double t = 0.0;
                 MPI_Recv(&t,1,MPI_DOUBLE,i,0,MPI_COMM_WORLD,&status);
-                time += t;
+                if (t > time)
+                    time = t;
             }
         }
-        ofstream C(fileC), Time(fileTime);
-
+        ofstream C(fileC.c_str(),ios_base::app), Time(fileTime.c_str(),ios_base::app),SpeedUp(speedUp.c_str(),ios_base::app),Efficiency(efficiency.c_str(),ios_base::app);
+        double cTime = 0.0;
+        if (commSize == 1)
+            cTime = time;
+        else
+            cTime = Matrix::getCommonTime(fileTime);
+        
         for (int i = 0; i < c.size(); i++)
             C << c[i] << endl;
 
-        Time << time << endl;
+        Time << (mode == 0 ? commSize : commSize + 100) << "\t" << time << endl;
+        SpeedUp << mode == 0 ? commSize : commSize + 100 << "\t" << cTime / time << endl;
+        Efficiency << mode == 0 ? commSize : commSize + 100 << "\t" << (cTime / time) / commSize << endl;
     }
     else
     {
@@ -201,7 +212,7 @@ vector<double> Matrix::parallelMultiply(const vector<double> &b,string fileC,str
                 for (int j = 0; j < m; j++)
                     res[i - start] += mat[i][j] * b[j];
             }
-            time -= MPI_Wtime() - time;
+            time = MPI_Wtime() - time;
 
             MPI_Send(Matrix::toArr(res), stop - start, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
             res.clear();
@@ -218,7 +229,7 @@ vector<double> Matrix::parallelMultiply(const vector<double> &b,string fileC,str
                 for (int j = start; j < stop; j++)
                     res[i] += mat[i][j] * b[j];
             }
-            time -= MPI_Wtime() - time;
+            time = MPI_Wtime() - time;
 
             MPI_Send(Matrix::toArr(res), n, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
             res.clear();
@@ -228,6 +239,17 @@ vector<double> Matrix::parallelMultiply(const vector<double> &b,string fileC,str
     MPI_Finalize();
 
     return c;
+}
+
+double Matrix::getCommonTime(string filename)
+{
+    ifstream file(filename.c_str());
+    double res = 0.0;
+
+    file >> res;
+    file >> res;
+
+    return res;
 }
 
 void Matrix::print(ostream &stream) const
@@ -243,7 +265,7 @@ void Matrix::print(ostream &stream) const
 
 Matrix Matrix::getFromFile(string filename)
 {
-    ifstream file(filename);
+    ifstream file(filename.c_str());
 
     if (!file.is_open() || file.eof())
     {
@@ -300,7 +322,7 @@ vector<double> Matrix::toVector(double* arr,int n)
 
 vector<double> Matrix::getVec(string filename) const
 {
-    ifstream file(filename);
+    ifstream file(filename.c_str());
 
     if (!file.is_open() || file.eof())
     {
