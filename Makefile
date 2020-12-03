@@ -11,7 +11,7 @@ report.out:
 	g++ src/report/report.cpp -o report.out -std=c++11	
 
 report: primary.out report.out 
-	./report.out 2> tmp.txt && rm tmp.txt && gnuplot report/all.plt && gnuplot report/max.plt
+	./report.out 2> tmp.txt && rm tmp.txt 
 
 RUN = mpisubmit-new.pl -p
 CMD = primary.out 1 100000000 result.txt report/all.dat report/max.dat

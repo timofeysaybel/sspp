@@ -167,7 +167,7 @@ vector<int> Primary::parallelFindPrimaries(string filename,string allName,string
             MPI_Recv(&t,1,MPI_DOUBLE,i,0,MPI_COMM_WORLD,&status);
             time.push_back(t);
         }
-
+        
         for (int i = 0; i < primaries.size(); i++)
         {
             if (primaries[i] < first)
@@ -177,14 +177,14 @@ vector<int> Primary::parallelFindPrimaries(string filename,string allName,string
             }
         }
 
-        ofstream all(allName,ios_base::app);
+        /*ofstream all(allName,ios_base::app);
         ofstream maximum(maxName ,ios_base::app);
         all << commSize << "\t" << sum(time) << endl;
         maximum << commSize << "\t" << findMax(time) << endl;
 
         all.close();
         maximum.close();
-        save(primaries,filename);
+        save(primaries,filename);*/
         cout << "Количество простых чисел: " <<  primaries.size() << endl;
     }
     else
