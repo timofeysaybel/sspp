@@ -107,10 +107,8 @@ vector<int> Primary::parallelFindPrimaries(string filename,string allName,string
     
     MPI_Status status;
     
-    cout << endl;
     if (rank == 0)
     {
-        cout << endl;
         double start = MPI_Wtime();
         int l = commSize == 1 ? last : sqrt(last) + 1;
 
@@ -186,7 +184,7 @@ vector<int> Primary::parallelFindPrimaries(string filename,string allName,string
         all.close();
         maximum.close();
         save(primaries,filename);*/
-        cout << "Количество простых чисел: " <<  primaries.size() << endl;
+        cout <<  primaries.size() << endl;
     }
     else
     {
