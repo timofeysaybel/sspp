@@ -2,16 +2,16 @@
 
 int main(int argc,char **argv)
 {
-    if (argc != 7)
+    if (argc != 5)
     {
         cerr << "Неверные параметры командной строки" << endl;
         return -1;
     }
 
     int first = stoi(string(argv[1])), last = stoi(string(argv[2]));
-    int threadNum = stoi(string(argv[6]));
+    int threadNum = stoi(string(argv[4]));
 
     Primary primary(first,last);
-    primary.pthreadFindPrimaries(string(argv[3]),string(argv[4]),string(argv[5]),threadNum);
+    primary.pthreadFindPrimaries(string(""),string(""),string(""),threadNum);
     return 0;
 }

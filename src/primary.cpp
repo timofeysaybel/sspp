@@ -160,7 +160,7 @@ vector<int> Primary::pthreadFindPrimaries(string filename, string allName, strin
             i--;
         }
     }
-
+    /*
     ofstream all(allName,ios_base::app);
     ofstream maximum(maxName ,ios_base::app);
     all << threadNum << "\t" << sum(time) << endl;
@@ -168,7 +168,7 @@ vector<int> Primary::pthreadFindPrimaries(string filename, string allName, strin
 
     all.close();
     maximum.close();
-    save(primaries,filename);
+    save(primaries,filename);*/
     cout << "Количество простых чисел: " <<  primaries.size() << endl;
 
     return primaries;
