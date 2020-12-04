@@ -169,7 +169,7 @@ vector<int> Primary::pthreadFindPrimaries(string filename, string allName, strin
     all.close();
     maximum.close();
     save(primaries,filename);*/
-    cout << "Количество простых чисел: " <<  primaries.size() << endl;
+    cout <<  primaries.size() << endl;
 
     return primaries;
 }
