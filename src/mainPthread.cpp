@@ -12,6 +12,6 @@ int main(int argc,char **argv)
     int threadNum = stoi(string(argv[4]));
 
     Primary primary(first,last);
-    primary.pthreadFindPrimaries(string(""),string(""),string(""),threadNum);
+    primary.pthreadFindPrimaries(string(argv[3]),string(""),string(""),threadNum);
     return 0;
 }

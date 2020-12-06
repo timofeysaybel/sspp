@@ -140,6 +140,7 @@ vector<int> Primary::pthreadFindPrimaries(string filename, string allName, strin
         res.last = last;
         res.threadNum = i + 1;
         res.amountOfThreads = threadNum;
+        res.primaries = primaries;
         if (pthread_create(&pthreads[i],NULL,pthreadCount,&res))
         {
             cerr << "Не удалось создать новый поток" << endl;
@@ -169,7 +170,7 @@ vector<int> Primary::pthreadFindPrimaries(string filename, string allName, strin
     all.close();
     maximum.close();
     save(primaries,filename);*/
-    cout <<  primaries.size() << endl;
+    cout << primaries.size() << endl;
 
     return primaries;
 }
@@ -178,19 +179,27 @@ void* Primary::pthreadCount(void *res)
 {
     double begin = clock();
     Result *result = (Result*)res;
+    
     int last = result->last,first = result->first;
     int childStart = sqrt(last) > first ? sqrt(last) : first;
     int childSize = (last - childStart) / (result->amountOfThreads - 1);
     int start = result->threadNum - 1 == 0 ? childStart + 1 : childStart + 2 + (result->threadNum - 1) * childSize;
     int stop = result->threadNum != result->amountOfThreads - 1 ? childStart + 1 + result->threadNum * childSize : last;
-
+    
     Primary nums(start,stop);
-    vector<int> pr = nums.findPrimaries();
+    for (int i = 0; i < (result->primaries).size(); i++)
+        nums.fill((result->primaries)[i],stop + 1);
+    
+    vector<int> tmp;
+    for (int i = start; i <= stop; i++)
+    {
+        if (nums.numbers[i] != NOT_PRIMARY)
+            tmp.push_back(i);
+    }
 
-    (result->childPrimaries).resize(pr.size());
-
-    for (int i = 0; i < pr.size(); i++)
-        result->childPrimaries[i] = pr[i];
+    result->childPrimaries.resize(tmp.size());
+    for (int i = 0; i < tmp.size(); i++)
+        result->childPrimaries[i] = tmp[i];
 
     double end = clock();
     result->threadTime = (end - begin)/CLOCKS_PER_SEC;
