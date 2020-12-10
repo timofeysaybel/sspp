@@ -96,8 +96,8 @@ void Primary::fill(int index,int stop,int start)
 vector<int> Primary::pthreadFindPrimaries(string filename, string allName, string maxName,int threadNum)
 {
     vector<int> primaries;
-    vector<double> time;
-    double start = clock();
+    //vector<double> time;
+    //double start = clock();
     int l = threadNum == 1 ? last : sqrt(last) + 1;
     if (l < 4)
     {
@@ -128,29 +128,35 @@ vector<int> Primary::pthreadFindPrimaries(string filename, string allName, strin
         }
     }
 
-    double stop = clock();
-    time.push_back((stop - start)/CLOCKS_PER_SEC);
+    //double stop = clock();
+    //time.push_back((stop - start)/CLOCKS_PER_SEC);
 
     vector<pthread_t> pthreads(threadNum - 1);
 
+    vector<Result> res(pthreads.size());
+
     for (int i = 0; i < pthreads.size(); i++)
     {
-        Result res;
-        res.first = first;
-        res.last = last;
-        res.threadNum = i + 1;
-        res.amountOfThreads = threadNum;
-        res.primaries = primaries;
-        if (pthread_create(&pthreads[i],NULL,pthreadCount,&res))
+        //Result res;
+        res[i].first = first;
+        res[i].last = last;
+        res[i].threadNum = i + 1;
+        res[i].amountOfThreads = threadNum;
+        res[i].primaries = primaries;
+        if (pthread_create(&pthreads[i],NULL,pthreadCount,&(res[i])))
         {
             cerr << "Не удалось создать новый поток" << endl;
             return primaries;
         }
-        pthread_join(pthreads[i],NULL);
-        time.push_back(res.threadTime);
+        
+        //time.push_back(res.threadTime);
+    }
 
-        for (int i = 0; i < res.childPrimaries.size(); i++)
-            primaries.push_back(res.childPrimaries[i]);
+    for (int i = 0; i < pthreads.size(); i++)
+    {
+        pthread_join(pthreads[i],NULL);
+        for (int j = 0; j < res[i].childPrimaries.size(); j++)
+            primaries.push_back(res[i].childPrimaries[j]);
     }
 
     for (int i = 0; i < primaries.size(); i++)
