@@ -110,7 +110,7 @@ vector<int> Primary::parallelFindPrimaries(string filename,string allName,string
     if (rank == 0)
     {
 	
-        double start = MPI_Wtime();
+        //double start = MPI_Wtime();
         int l = commSize == 1 ? last : sqrt(last) + 1;
 
         if (l < 4)
@@ -144,13 +144,13 @@ vector<int> Primary::parallelFindPrimaries(string filename,string allName,string
         
         int sz = primaries.size();
 
-        double stop = MPI_Wtime();
+        //double stop = MPI_Wtime();
 
         for (int i = 1; i < commSize; i++)
             MPI_Send(toIntArr(primaries), primaries.size(), MPI_INT, i, 0, MPI_COMM_WORLD);
 
-        vector<double> time;
-        time.push_back(stop - start);
+        //vector<double> time;
+        //time.push_back(stop - start);
         for (int i = 1; i < commSize; i++)
         {
 		if (i == commSize - 1)
@@ -166,10 +166,10 @@ vector<int> Primary::parallelFindPrimaries(string filename,string allName,string
 		}
             }
             delete[] buffer;
-            tmp.clear();
+            tmp.clear();/*
             double t = 0.0;
             MPI_Recv(&t,1,MPI_DOUBLE,i,0,MPI_COMM_WORLD,&status);
-            time.push_back(t);
+            time.push_back(t);*/
         }
         
         for (int i = 0; i < primaries.size(); i++)
@@ -187,8 +187,8 @@ vector<int> Primary::parallelFindPrimaries(string filename,string allName,string
         maximum << commSize << "\t" << findMax(time) << endl;
 
         all.close();
-        maximum.close();*/
-        save(primaries,filename);
+        maximum.close();
+        save(primaries,filename);*/
         cout <<  primaries.size() << endl;
     }
     else
@@ -201,7 +201,7 @@ vector<int> Primary::parallelFindPrimaries(string filename,string allName,string
         int *arr = new int[n];
 
         MPI_Recv(arr, n, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
-        double time = MPI_Wtime();
+        //double time = MPI_Wtime();
         vector<int> pr = toVector(arr, n);
 
         int start = childStart + 1 + (rank - 1) * childSize, stop = rank != commSize - 1 ? childStart + 1 + rank * childSize : last;
@@ -222,11 +222,11 @@ vector<int> Primary::parallelFindPrimaries(string filename,string allName,string
 
         delete[] arr;
         pr.clear();
-        time = MPI_Wtime() - time;
+        //time = MPI_Wtime() - time;
         MPI_Send(toIntArr(childPrimaries), childSize, MPI_INT, 0, 0, MPI_COMM_WORLD);
         childPrimaries.clear();
 
-        MPI_Send(&time,1,MPI_DOUBLE,0,0,MPI_COMM_WORLD);
+        //MPI_Send(&time,1,MPI_DOUBLE,0,0,MPI_COMM_WORLD);
     }
     MPI_Finalize();
 
