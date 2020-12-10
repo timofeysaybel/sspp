@@ -196,7 +196,7 @@ vector<double> Matrix::parallelMultiply(const vector<double> &b,string fileC,str
 
         Time << (mode == 0 ? commSize : commSize + 100) << "\t" << time << endl;
         SpeedUp << (mode == 0 ? commSize : commSize + 100) << "\t" << cTime / time << endl;
-        Efficiency << (mode == 0 ? commSize : commSize + 100 << "\t" << (cTime / time) / commSize << endl;
+        Efficiency << (mode == 0 ? commSize : commSize + 100) << "\t" << (cTime / time) / commSize << endl;
     }
     else
     {
