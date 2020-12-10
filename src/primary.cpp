@@ -95,6 +95,7 @@ void Primary::fill(int index,int stop,int start)
 
 vector<int> Primary::pthreadFindPrimaries(string filename, string allName, string maxName,int threadNum)
 {
+    vector<int> result;
     vector<int> primaries;
     //vector<double> time;
     //double start = clock();
@@ -105,16 +106,26 @@ vector<int> Primary::pthreadFindPrimaries(string filename, string allName, strin
         {
             primaries.push_back(2);
             primaries.push_back(3);
+            if (2 >= first)
+                result.push_back(2);
+            if (3 >= first)
+                result.push_back(3);
         } else
         {
             if (l <= 2)
                 primaries.push_back(2);
+            if (2 >= first)
+                result.push_back(2);
         }
     }
     else
     {
         primaries.push_back(2);
         primaries.push_back(3);
+        if (2 >= first)
+            result.push_back(2);
+        if (3 >= first)
+            result.push_back(3);
         fill(2, l);
         fill(3, l);
 
@@ -123,11 +134,12 @@ vector<int> Primary::pthreadFindPrimaries(string filename, string allName, strin
             if (numbers[i] == PRIMARY)
             {
                 primaries.push_back(i);
+                if (i >= first)
+                    result.push_back(i);
                 fill(i, l);
             }
         }
     }
-
     //double stop = clock();
     //time.push_back((stop - start)/CLOCKS_PER_SEC);
 
@@ -135,7 +147,7 @@ vector<int> Primary::pthreadFindPrimaries(string filename, string allName, strin
 
     vector<Result> res(pthreads.size());
 
-    for (int i = 0; i < pthreads.size(); i++)
+    for (int i = 0; i < threadNum - 1; i++)
     {
         //Result res;
         res[i].first = first;
@@ -151,22 +163,13 @@ vector<int> Primary::pthreadFindPrimaries(string filename, string allName, strin
         
         //time.push_back(res.threadTime);
     }
-
-    for (int i = 0; i < pthreads.size(); i++)
+    for (int i = 0; i < threadNum -1 ; i++)
     {
         pthread_join(pthreads[i],NULL);
         for (int j = 0; j < res[i].childPrimaries.size(); j++)
-            primaries.push_back(res[i].childPrimaries[j]);
+            result.push_back(res[i].childPrimaries[j]);
     }
-
-    for (int i = 0; i < primaries.size(); i++)
-    {
-        if (primaries[i] < first)
-        {
-            primaries.erase(primaries.begin() + i);
-            i--;
-        }
-    }
+    
     /*
     ofstream all(allName,ios_base::app);
     ofstream maximum(maxName ,ios_base::app);
@@ -176,9 +179,9 @@ vector<int> Primary::pthreadFindPrimaries(string filename, string allName, strin
     all.close();
     maximum.close();
     save(primaries,filename);*/
-    cout << primaries.size() << endl;
+    cout << result.size() << endl;
 
-    return primaries;
+    return result;
 }
 
 void* Primary::pthreadCount(void *res)
@@ -193,13 +196,14 @@ void* Primary::pthreadCount(void *res)
     int stop = result->threadNum != result->amountOfThreads - 1 ? childStart + 1 + result->threadNum * childSize : last;
     
     Primary nums(start,stop);
+
     for (int i = 0; i < (result->primaries).size(); i++)
         nums.fill((result->primaries)[i],stop + 1);
     
     vector<int> tmp;
     for (int i = start; i <= stop; i++)
     {
-        if (nums.numbers[i] != NOT_PRIMARY)
+        if (nums.numbers[i] != NOT_PRIMARY && i >= first)
             tmp.push_back(i);
     }
 
