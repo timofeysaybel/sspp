@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 
         Matrix matrix = Matrix::getFromFile(string(argv[1]));
         vector<double> b = matrix.getVec(string(argv[2]));
-        matrix.parallelMultiply(b, string(argv[3]), TIME_FILE,SPEED_UP_FILE,EFFICIENCY_FILE);
+        matrix.parallelMultiply(b, string(argv[3]), TIME_FILE,SPEED_UP_FILE,EFFICIENCY_FILE,mode);
         return 0;
     }
     catch (int)
