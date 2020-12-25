@@ -13,7 +13,7 @@ void mainPrimaries(int threadNum);
 
 int main(int argc, char *argv[])
 {
-    if (argc != 4)
+    if (argc != 5)
     {
         cerr << "Неверные аргументы командной строки" << endl;
         return -1;
@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 
     first = atoi(argv[1]);
     last = atoi(argv[2]);
-    int threadNum = atoi(argv[3]);
+    int threadNum = atoi(argv[4]);
     
     mainPrimaries(threadNum);
     
