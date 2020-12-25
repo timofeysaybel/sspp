@@ -2,10 +2,10 @@
 
 struct Result
 {
-    std::vector<int> primaries;
-    std::vector<int> childPrimaries;
+    std::vector<int> numbers;
+    int *childPrimaries;
+    int size;
     int last,first;
-    double threadTime;
     int threadNum;
     int amountOfThreads;
 };

@@ -1,5 +1,10 @@
 #include <iostream>
 #include <vector>
+#include <cmath>
+#include <fstream>
+#include <chrono>
+#include <algorithm>
+#include <pthread.h>
 
 #include "res_struct.h"
 
@@ -23,6 +28,8 @@ class Primary
 
     static void *pthreadCount(void *res);
 
+    static void fill(vector<int> &numbers, int index, int stop = -1);
+
 public:
     Primary()
     {}
@@ -37,5 +44,5 @@ public:
 
     vector<int> findPrimaries();
 
-    vector<int> pthreadFindPrimaries(string filename,string allName,string maxName,int threadNum);
+    int *pthreadFindPrimaries(string filename,string allName,string maxName,int threadNum);
 };

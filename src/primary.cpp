@@ -1,10 +1,3 @@
-#include <cmath>
-#include <fstream>
-#include <chrono>
-#include <algorithm>
-
-#include <pthread.h>
-
 #include "../inc/primary.h"
 
 #define RESET "\033[0m"
@@ -93,39 +86,46 @@ void Primary::fill(int index,int stop,int start)
         numbers[i] = NOT_PRIMARY;
 }
 
-vector<int> Primary::pthreadFindPrimaries(string filename, string allName, string maxName,int threadNum)
+int *Primary::pthreadFindPrimaries(string filename, string allName, string maxName,int threadNum)
 {
-    vector<int> result;
-    vector<int> primaries;
-    //vector<double> time;
-    //double start = clock();
+    int *primaries = new int[last - first];
+    int n = 0;
     int l = threadNum == 1 ? last : sqrt(last) + 1;
     if (l < 4)
     {
         if (l <= 3)
         {
-            primaries.push_back(2);
-            primaries.push_back(3);
-            if (2 >= first)
-                result.push_back(2);
-            if (3 >= first)
-                result.push_back(3);
+            if (first >= 2)
+            {
+                primaries[n] = 2;
+                n++;
+            }
+            if (first >= 3)
+            {
+                primaries[n] = 3;
+                n++;
+            }
         } else
         {
-            if (l <= 2)
-                primaries.push_back(2);
-            if (2 >= first)
-                result.push_back(2);
+            if (first >= 2)
+            {
+                primaries[n] = 2;
+                n++;
+            }
         }
     }
     else
     {
-        primaries.push_back(2);
-        primaries.push_back(3);
-        if (2 >= first)
-            result.push_back(2);
-        if (3 >= first)
-            result.push_back(3);
+        if (first <= 2)
+        {
+            primaries[n] = 2;
+            n++;
+        }
+        if (first <= 3)
+        {
+            primaries[n] = 3;
+            n++;
+        }
         fill(2, l);
         fill(3, l);
 
@@ -133,15 +133,15 @@ vector<int> Primary::pthreadFindPrimaries(string filename, string allName, strin
         {
             if (numbers[i] == PRIMARY)
             {
-                primaries.push_back(i);
                 if (i >= first)
-                    result.push_back(i);
+                {
+                    primaries[n] = i;
+                    n++;
+                }
                 fill(i, l);
             }
         }
     }
-    //double stop = clock();
-    //time.push_back((stop - start)/CLOCKS_PER_SEC);
 
     vector<pthread_t> pthreads(threadNum - 1);
 
@@ -149,71 +149,69 @@ vector<int> Primary::pthreadFindPrimaries(string filename, string allName, strin
 
     for (int i = 0; i < threadNum - 1; i++)
     {
-        //Result res;
         res[i].first = first;
         res[i].last = last;
         res[i].threadNum = i + 1;
         res[i].amountOfThreads = threadNum;
-        res[i].primaries = primaries;
+        res[i].numbers = numbers;
         if (pthread_create(&pthreads[i],NULL,pthreadCount,&(res[i])))
         {
             cerr << "Не удалось создать новый поток" << endl;
             return primaries;
         }
-        
-        //time.push_back(res.threadTime);
     }
     for (int i = 0; i < threadNum -1 ; i++)
     {
         pthread_join(pthreads[i],NULL);
-        for (int j = 0; j < res[i].childPrimaries.size(); j++)
-            result.push_back(res[i].childPrimaries[j]);
+        for (int j = 0; j < res[i].size; j++)
+        {
+            if (res[i].childPrimaries[j] >= first)
+            {
+                primaries[n] = res[i].childPrimaries[j];
+                n++;
+            }
+        }
+        delete [] res[i].childPrimaries;
     }
-    
-    /*
-    ofstream all(allName,ios_base::app);
-    ofstream maximum(maxName ,ios_base::app);
-    all << threadNum << "\t" << sum(time) << endl;
-    maximum << threadNum << "\t" << findMax(time) << endl;
+    for (int i = 0; i < n; i++)
+        cout << primaries[i] << " ";
+    cout << endl;
+    cout << n << endl;
+    delete [] primaries;
+    return primaries;
+}
 
-    all.close();
-    maximum.close();
-    save(primaries,filename);*/
-    cout << result.size() << endl;
-
-    return result;
+void Primary::fill(vector<int> &numbers, int index, int stop)
+{
+     for (int i = index + index; i < stop; i+=index)
+        numbers[i] = NOT_PRIMARY;
 }
 
 void* Primary::pthreadCount(void *res)
 {
-    double begin = clock();
     Result *result = (Result*)res;
     
     int last = result->last,first = result->first;
+    
     int childStart = sqrt(last) > first ? sqrt(last) : first;
     int childSize = (last - childStart) / (result->amountOfThreads - 1);
+    
     int start = result->threadNum - 1 == 0 ? childStart + 1 : childStart + 2 + (result->threadNum - 1) * childSize;
     int stop = result->threadNum != result->amountOfThreads - 1 ? childStart + 1 + result->threadNum * childSize : last;
     
-    Primary nums(start,stop);
+    for (int i = 2; i < sqrt(last); i++)
+        fill(result->numbers,i,stop);
 
-    for (int i = 0; i < (result->primaries).size(); i++)
-        nums.fill((result->primaries)[i],stop + 1);
-    
-    vector<int> tmp;
-    for (int i = start; i <= stop; i++)
+    result->size = 0;
+    result->childPrimaries = new int [stop - start];
+    for (int i = start; i < stop; i++)
     {
-        if (nums.numbers[i] != NOT_PRIMARY && i >= first)
-            tmp.push_back(i);
+        if (result->numbers[i] == PRIMARY && i >= first)
+        {
+            result->childPrimaries[result->size] = i;
+            result->size++;
+        }
     }
-
-    result->childPrimaries.resize(tmp.size());
-    for (int i = 0; i < tmp.size(); i++)
-        result->childPrimaries[i] = tmp[i];
-
-    double end = clock();
-    result->threadTime = (end - begin)/CLOCKS_PER_SEC;
-
     return NULL;
 }
 
