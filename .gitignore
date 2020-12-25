@@ -4,3 +4,4 @@ report/*.dat
 *.err
 .DS_Store
 inc/.DS_Store
+bin_ptr
