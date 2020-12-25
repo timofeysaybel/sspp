@@ -1,5 +1,5 @@
-primary.out:
-	g++ src/mainPthread.cpp src/primary.cpp -o primaryPthread.out -std=c++11 -lpthread
+bin_ptr:
+	g++ src/mainPthread.cpp src/primary.cpp -o bin_ptr -std=c++11 -lpthread
 
 clean:
 	rm *.out *.txt report/*.dat *.err
